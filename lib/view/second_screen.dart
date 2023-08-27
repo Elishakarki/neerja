@@ -4,8 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neerja/main.dart';
 import 'package:neerja/moviebloc/bloc/movie_bloc_bloc.dart';
+import 'package:neerja/view/dashboard_screen.dart';
+import 'package:neerja/view/swipeable.dart';
+import 'package:page_transition/page_transition.dart';
 import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swipeable_button_view/swipeable_button_view.dart';
+
 
 import '../todo/todo_view.dart';
 import '../utility/shared_preferences.dart';
@@ -27,6 +32,7 @@ class _SecondScreenState extends State<SecondScreen> {
   final String? lastname = UserSimplePreferences.getLastname();
   final String? profileUrl = UserSimplePreferences.getProfileUrl();
   MovieBlocBloc movieBlocBloc = MovieBlocBloc();
+  bool isFinished = false;
   List<Movie> movies = [];
   Future<void> clearSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -192,12 +198,17 @@ class _SecondScreenState extends State<SecondScreen> {
             actions: <Widget>[
               PopupMenuButton<int>(
                 onSelected: (value) {
-                  if (value == 0) {}
+                  if (value == 0) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => TodoPage()));
+                  }
                   if (value == 1) {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) =>TodoPage()));
+                        PageTransition(
+                            duration: Duration(seconds: 3),
+                            child: const SwipeableButton(),
+                            type: PageTransitionType.fade));
                   }
                 },
                 itemBuilder: (context) => [
@@ -217,29 +228,96 @@ class _SecondScreenState extends State<SecondScreen> {
                 ],
               ),
             ]),
-        floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
-            onPressed: () {
-              showModalBottomSheet(
-                  isScrollControlled: false,
-                  isDismissible: false,
-                  elevation: 4,
-                  backgroundColor: Colors.grey,
-             
-                  context: context,
-                  builder: (context) {
-                    return Container(
-                      decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(50))),
-                      height: 600,
-                      child: const Column(
-                        children: [],
-                      ),
-                    );
+        floatingActionButton: Padding(
+          padding: EdgeInsets.all(20),
+          child: SwipeableButtonView(
+            
+              buttonText: 'Navigate To SAved Movies',
+              buttonWidget: Container(
+                child: Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.grey,
+                ),
+              ),
+              activeColor: Color(0xFF009C41),
+              isFinished: isFinished,
+              onWaitingProcess: () {
+                Future.delayed(Duration(seconds: 2), () {
+                  setState(() {
+                    isFinished = true;
                   });
-            }),
+                });
+              },
+              onFinish: () async {
+                await Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.fade, child: TodoPage()));
+
+                //TODO: For reverse ripple effect animation
+                setState(() {
+                  isFinished = false;
+                });
+              }),
+        ),
+
+        //  Draggable(
+        //   child: Container(
+        //     width: 100,
+        //     height: 100,
+        //     color: Colors.blue,
+        //     child: Center(child: Text('Drag me')),
+        //   ),
+        //   feedback: Container(
+        //     width: 100,
+        //     height: 100,
+        //     color: Colors.blue.withOpacity(1),
+        //     child: Center(
+        //         child: Image.network(
+        //             "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Fkathmandu&psig=AOvVaw3qySpsFz2B7rf5kqVQ_v_w&ust=1692879001274000&source=images&cd=vfe&opi=89978449&ved=0CBAQjRxqFwoTCMDctNzf8oADFQAAAAAdAAAAABAE")),
+        //   ),
+        //   data: 'MyData', // Data to be passed to DragTarget
+        //   axis: Axis.vertical,
+        //   childWhenDragging: Container(
+        //     width: 100,
+        //     height: 100,
+        //     color: Colors.grey,
+        //   ),
+        //   onDragStarted: () {
+        //     print('Drag started');
+        //   },
+        //   onDraggableCanceled: (_, __) {
+        //     print('Drag canceled');
+        //   },
+        //   onDragEnd: (details) {
+        //     print('Drag ended at ${details.offset}');
+        //   },
+        // )
+
+        // FloatingActionButton(
+        //     child: Icon(Icons.add),
+        //     onPressed: () {
+        //       showModalBottomSheet(
+        //           isScrollControlled: false,
+        //           isDismissible: false,
+        //           elevation: 4,
+        //           backgroundColor: Colors.grey,
+
+        //           context: context,
+        //           builder: (context) {
+        //             return Container(
+        //               decoration: const BoxDecoration(
+        //                   color: Colors.transparent,
+        //                   borderRadius:
+        //                       BorderRadius.vertical(top: Radius.circular(50))),
+        //               height: 600,
+        //               child: const Column(
+        //                 children: [],
+        //               ),
+        //             );
+        //           });
+        //     }),
+
         body: BlocConsumer<MovieBlocBloc, MovieBlocState>(
           bloc: movieBlocBloc,
           listener: (context, state) {

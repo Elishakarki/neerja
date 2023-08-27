@@ -33,7 +33,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.movie.title),
-        actions: [],
+       
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
