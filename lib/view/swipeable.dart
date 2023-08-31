@@ -3,6 +3,7 @@ import 'package:swipeable_button_view/swipeable_button_view.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'dashboard_screen.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class SwipeableButton extends StatefulWidget {
   const SwipeableButton({super.key});
@@ -12,46 +13,34 @@ class SwipeableButton extends StatefulWidget {
 }
 
 class _SwipeableButtonState extends State<SwipeableButton> {
+  final TextEditingController messageController = TextEditingController();
   bool isFinished = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Align(
-      alignment: Alignment.bottomCenter,
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(bottom: 15, right: 5, left: 5),
-          child: SwipeableButtonView(
-              buttonText: 'SLIDE TO PAYMENT',
-              buttonWidget: Container(
-                child: Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Colors.grey,
-                ),
-              ),
-              activeColor: Color(0xFF009C41),
-              isFinished: isFinished,
-              onWaitingProcess: () {
-                Future.delayed(Duration(seconds: 2), () {
-                  setState(() {
-                    isFinished = true;
-                  });
-                });
-              },
-              onFinish: () async {
-                // await Navigator.push(
-                //     context,
-                //     PageTransition(
-                //         type: PageTransitionType.fade,
-                //         child: DashBoardScreen()));
-
-                //TODO: For reverse ripple effect animation
-                setState(() {
-                  isFinished = false;
-                });
-              }),
+        appBar: AppBar(
+          title: Text('Some ready'),
         ),
-      ),
-    ));
+        body: SafeArea(
+          child: Column(
+            children: [
+              Flexible(
+                  child: Container(
+                height: context.screenHeight,
+              )),
+              Row(
+                children: [
+                  Expanded(
+                      child: TextField(
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8))),
+                    controller: messageController,
+                  ))
+                ],
+              )
+            ],
+          ).pOnly(left: 10, right: 10),
+        ));
   }
 }

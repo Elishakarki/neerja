@@ -13,6 +13,7 @@ class TodoPage extends StatefulWidget {
 class _TodoPageState extends State<TodoPage> {
   List<Movie> savedMovies = [];
   List<bool> isEditingList = [];
+  List<Widget> WidgetList = [];
 
   @override
   void initState() {
@@ -26,6 +27,9 @@ class _TodoPageState extends State<TodoPage> {
     setState(() {
       savedMovies = movies;
       isEditingList = List.generate(movies.length, (index) => false);
+      WidgetList = List.generate(movies.length, (index) => Container(
+        child: Text(" Something to be added"),
+      ));
     });
   }
 

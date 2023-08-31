@@ -23,31 +23,27 @@ void main() async {
 //       LoginPage() ,);
 //       LoginPage() ,);
   runApp(MultiBlocProvider(
-    providers: [
-      BlocProvider<LoginBlocBloc>(
-        create: (BuildContext context) => LoginBlocBloc(),
-      ),
-      
-
-       BlocProvider<PopularmovieBloc>(
-        create: (BuildContext context) => PopularmovieBloc(),
-      ),
-     BlocProvider<MovieBlocBloc>(
-        create: (BuildContext context) => MovieBlocBloc(),
-      ),
-    ],
-    child: MaterialApp(
-       initialRoute: '/',
-
+      providers: [
+        BlocProvider<LoginBlocBloc>(
+          create: (BuildContext context) => LoginBlocBloc(),
+        ),
+        BlocProvider<PopularmovieBloc>(
+          create: (BuildContext context) => PopularmovieBloc(),
+        ),
+        BlocProvider<MovieBlocBloc>(
+          create: (BuildContext context) => MovieBlocBloc(),
+        ),
+      ],
+      child: MaterialApp(
+        initialRoute: '/',
         debugShowCheckedModeBanner: false,
-       routes: {
-        '/': (context) => userToken.getString("firstname") == null
-            ? LoginPage()
-            : SecondScreen(),
-              '/second': (context) => SecondScreen(),
-       },
-  ))
-  );
+        routes: {
+          '/': (context) => userToken.getString("firstname") == null
+              ? LoginPage()
+              : SecondScreen(),
+          '/second': (context) => SecondScreen(),
+        },
+      )));
 }
 
 const Color primaryColor = Colors.green;
@@ -61,8 +57,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
- final FocusNode _firstFocus = FocusNode();
- final FocusNode _secondFocus = FocusNode();
+  final FocusNode _firstFocus = FocusNode();
+  final FocusNode _secondFocus = FocusNode();
   String? email;
 
   dynamic password;
@@ -71,11 +67,11 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoggedIn = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
-   LoginBlocBloc authBloc = LoginBlocBloc();
+  LoginBlocBloc authBloc = LoginBlocBloc();
   TextEditingController passwordController = TextEditingController();
+  bool? obscureText = true;
   String? _validateEmail(String value) {
-    if (
-      value.isEmpty) {
+    if (value.isEmpty) {
       return 'Please enter an email';
     }
     // You can add more advanced email validation here if needed
@@ -99,12 +95,13 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-@override
-void dispose() {
-  _firstFocus.dispose();
-  _secondFocus.dispose();
-  super.dispose();
-}
+  @override
+  void dispose() {
+    _firstFocus.dispose();
+    _secondFocus.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,7 +125,7 @@ void dispose() {
                             onSaved: (nevl) {
                               emailController.text = nevl!;
                             },
-        
+
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return " please Enter the Email Adress";
@@ -137,6 +134,10 @@ void dispose() {
                             },
                             controller: emailController,
                             decoration: InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.email_rounded,
+                                color: Colors.grey,
+                              ),
                               contentPadding: const EdgeInsets.all(20),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10)),
@@ -150,7 +151,7 @@ void dispose() {
                             ),
                             // onChanged: (value) {
                             //   emailController.text = value;
-        
+
                             // },) ,
                           ),
                         ),
@@ -161,13 +162,14 @@ void dispose() {
                           child: Padding(
                             padding: const EdgeInsets.all(10),
                             child: TextFormField(
+                              obscureText: obscureText!,
                               focusNode: _secondFocus,
-                                textInputAction: TextInputAction.done,
+                              textInputAction: TextInputAction.done,
                               onSaved: (nevalue) {
                                 passwordController.text = nevalue!;
                               },
                               controller: passwordController,
-        
+
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return " plz add a password";
@@ -175,6 +177,24 @@ void dispose() {
                                 return null;
                               },
                               decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        obscureText = !obscureText!;
+                                      });
+                                    },
+                                    icon: Icon(obscureText!
+                                        ? Icons.visibility
+                                        : Icons.visibility_off)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.green, width: 2),
+                                    borderRadius: BorderRadius.circular(16)),
+                                focusColor: Colors.green,
+                                prefixIcon: Icon(
+                                  Icons.password,
+                                  color: Colors.grey,
+                                ),
                                 contentPadding: const EdgeInsets.all(20),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10)),
@@ -182,7 +202,7 @@ void dispose() {
                                 label: const Text(" password"),
                               ),
                               keyboardType: TextInputType.emailAddress,
-        
+
                               //      decoration: const InputDecoration(
                               //    errorBorder: OutlineInputBorder( //<-- SEE HERE
                               //  borderSide: BorderSide(
@@ -195,7 +215,7 @@ void dispose() {
                         // onChanged: (value) {
                         //    passwordController.text = value;
                         // },) ,
-        
+
                         const SizedBox(
                           height: 20,
                         ),
@@ -225,91 +245,80 @@ void dispose() {
                         //       }
                         //       return Container();
                         //     }),
-        
-        
-                        BlocConsumer<LoginBlocBloc, LoginblocState>(
-                          bloc:authBloc,
-                          listener: (context, state) {
-                           
-                            if(state is LoginBlocPressedState){
-        
-                         
-                              if(state.response["success"]=="Success: API session successfully started!"){
-        Navigator.pushNamed(context, '/second');
 
-        emailController.clear();
-        passwordController.clear();
-          isLoggedIn= false;
-                             
-                              }
-                              else{
+                        BlocConsumer<LoginBlocBloc, LoginblocState>(
+                          bloc: authBloc,
+                          listener: (context, state) {
+                            if (state is LoginBlocPressedState) {
+                              if (state.response["success"] ==
+                                  "Success: API session successfully started!") {
+                                Navigator.pushNamed(context, '/second');
+
+                                emailController.clear();
+                                passwordController.clear();
+                                isLoggedIn = false;
+                              } else {
                                 setState(() {
-                                  isLoggedIn =false;
+                                  isLoggedIn = false;
                                 });
-                                   Utilites.showInToast( "Invalid users");
+                                Utilites.showInToast("Invalid users");
                               }
-        
                             }
-                             if(state is LoginBlocErrorState){
-                                 Utilites.showInToast(state.erroMessage);
-                              }
-                            
+                            if (state is LoginBlocErrorState) {
+                              Utilites.showInToast(state.erroMessage);
+                            }
                           },
                           builder: (context, state) {
-                            if(state is LoginBlocLoadingState){
-                              return  CircularProgressIndicator();
+                            if (state is LoginBlocLoadingState) {
+                              return CircularProgressIndicator();
+                            } else {
+                              return FloatingActionButton.extended(
+                                backgroundColor: Colors.green,
+                                onPressed: () async {
+                                  setState(() {
+                                    isLoggedIn =
+                                        false; // Set isLoggedIn to false after login
+                                  });
+                                  if (_formKey.currentState!.validate()) {
+                                    authBloc.add(LoginButtonPressedEvent(
+                                        email: emailController.text,
+                                        password: passwordController.text));
+
+                                    setState(() {
+                                      isLoggedIn = true;
+                                    });
+                                    //  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => SecondScreen(),));
+                                  } else {
+                                    Utilites.showInToast(
+                                        " Plz enter email and password ");
+                                  }
+
+                                  // final response = res.response;
+                                },
+                                label: isLoggedIn
+                                    ? Container(
+                                        color: Colors.green,
+                                        width: 48,
+                                        height: 48,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth:
+                                              3.0, // Adjust the strokeWidth to change the thickness
+                                          backgroundColor: Colors
+                                              .grey, // Set the background color
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.blue), // Set the color
+                                        ),
+                                      )
+                                    : Text("Submit "),
+                              );
                             }
-                            
-                           else {
-                            return FloatingActionButton.extended(
-                              backgroundColor: Colors.green,
-                              onPressed: () async {
-                                        setState(() {
-                                isLoggedIn = false; // Set isLoggedIn to false after login
-                                          });
-                                if (_formKey.currentState!.validate()) {
-                             
-                                  authBloc.add(LoginButtonPressedEvent(
-                                      email:emailController.text, password:passwordController.text));
-                                     
-                                      setState(() {
-                                  isLoggedIn = true;
-                                });
-                                //  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => SecondScreen(),));
-                                } else {
-                                  Utilites.showInToast(" Plz enter email and password ");
-                                }
-                                
-        
-                                
-                                // final response = res.response;
-                              },
-                              label: isLoggedIn
-                                  ? Container(
-                                      color: Colors.green,
-                                      width: 48,
-                                      height: 48,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth:
-                                            3.0, // Adjust the strokeWidth to change the thickness
-                                        backgroundColor: Colors
-                                            .grey, // Set the background color
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                            Colors.blue), // Set the color
-                                      ),
-                                    )
-                                  : Text("Submit "),
-                            );
-                          
-                          }
-                           
                           },
                         ),
                       ]))),
         ));
   }
 }
-
 
 class ContainerListScreen extends StatefulWidget {
   const ContainerListScreen({super.key});

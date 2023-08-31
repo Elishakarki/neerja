@@ -11,7 +11,6 @@ import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipeable_button_view/swipeable_button_view.dart';
 
-
 import '../todo/todo_view.dart';
 import '../utility/shared_preferences.dart';
 import 'movie_class.dart';
@@ -206,7 +205,7 @@ class _SecondScreenState extends State<SecondScreen> {
                     Navigator.push(
                         context,
                         PageTransition(
-                            duration: Duration(seconds: 3),
+                            duration: Duration(microseconds: 2),
                             child: const SwipeableButton(),
                             type: PageTransitionType.fade));
                   }
@@ -231,7 +230,6 @@ class _SecondScreenState extends State<SecondScreen> {
         floatingActionButton: Padding(
           padding: EdgeInsets.all(20),
           child: SwipeableButtonView(
-            
               buttonText: 'Navigate To SAved Movies',
               buttonWidget: Container(
                 child: Icon(
